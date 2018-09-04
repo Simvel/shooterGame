@@ -2,20 +2,24 @@ var canvas, toolbar, ctx, tctx, width, height;
 
 function level(n) {
 	return {
-		timeOnLevel:10+n,
+		timeOnLevel:5+n,
 		spawnChance:0.01-0.001*n
 	};
 }
+
+var time = 0;
 
 var player = {
 			x:200,
  			y:600,
  			health:10,
+ 			level:1,
    			shotReload:2,
     		score:0,
      		combo:0,
      		ammo:0,
      		ammoMax:2,
+     		ammoRadius:10,
      		hammerCharge:0,
      		hammerChargeReq:30,
      		hammerRange:150,
@@ -24,6 +28,7 @@ var player = {
 
 function init(gameState) {
 	canvas = document.getElementById("canvas");
+	button1 = document.getElementById("button1");
 	width = canvas.width;
 	height = canvas.height;
 	ctx = canvas.getContext('2d');
@@ -45,21 +50,20 @@ function init(gameState) {
 	}
 
 	if(gameState == 1) {
-		var time = utils.getTime();
+		canvas.style.display="block";
+		canvas.onclick = function() {};
 		var ongoing = setInterval(function() {
 			updateGame(0.01);
 			renderGame();
 			if (player.health<1) {init(3); clearInterval(ongoing)};
+			if (time>level(player.level).timeOnLevel) {init(2); clearInterval(ongoing);time=0;};
 		}, 10);
 	}
 
 	if(gameState == 2) {
-		ctx.fillStyle = "#c6c6c6";
-		ctx.fillRect(0,0,width,height);
-		ctx.fillStyle = "#000000";
-		ctx.font="20px Georgia";
-		ctx.fillText("You died :( click to go again!",10,50);
-		canvas.onclick = function() {init(1);};
+		canvas.style.display="none";
+		button1.style.display="block";
+		button1.onclick = function() {init(1);};
 	}
 
 	if(gameState == 3) {
@@ -76,13 +80,14 @@ function keyPressed(key) {
 	switch(key) {
 		case 38:
 			console.log(player.ammo);
+			console.log(time);
 
 			if (player.ammo > 0) {
 				bullets.push({
 					x:200,
 					y:600,
 					v:800,
-					radius:10,
+					radius:player.ammoRadius,
 					combo:0
 				});
 				player.ammo--;
@@ -100,7 +105,7 @@ function keyPressed(key) {
 }
 
 function updateGame(dt) {
-	time =
+	time += dt;
 	bullets.update(dt);
 	targets.update(dt);
 	hammer.update(dt);
