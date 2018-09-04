@@ -28,13 +28,15 @@ function Targets() {
 				delete this.objects[i];
 			}
 
+			//This should not be here
 			for(var j = 0;j < 100;j++) {
 				if (bullets.objects[j] != undefined) {
 					var dist = Math.sqrt(((obj.x-bullets.objects[j].x)**2 + (obj.y-bullets.objects[j].y)**2));
 					var minDist = obj.radius+bullets.objects[j].radius;
-					if(dist-minDist<0) {
-						delete this.objects[i]; //maybe delete after render. Prettier
+					if(dist-minDist < 0) {
+						delete this.objects[i]; //Maybe delete after render. Prettier
 						player.score += 1+player.combo;
+						player.hammerCharge += 1+player.combo;
 						player.combo++;
 						bullets.objects[j].combo = 1;
 					}

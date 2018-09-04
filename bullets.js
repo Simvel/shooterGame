@@ -11,7 +11,6 @@ function Bullets() {
 		while(this.objects[++id] != undefined) {}
 		this.objects[id] = bullet;
 		if(id > this.maxID) {this.maxID = id;}
-
 	}
 
 	this.update = function(dt) {

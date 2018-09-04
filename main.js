@@ -3,12 +3,15 @@ var canvas, toolbar, ctx, tctx, width, height;
 var player = {
 			x:200,
  			y:600,
-  			shotTime:0,
    			shotReload:2,
     		score:0,
      		combo:0,
      		ammo:0,
-     		ammoMax:2
+     		ammoMax:2,
+     		hammerCharge:0,
+     		hammerChargeReq:30,
+     		hammerRange:150,
+     		hammerDuration:1
      		};
 
 function init() {
@@ -45,20 +48,32 @@ function keyPressed(key) {
 				});
 				player.ammo--;
 			}
+			break;
 			
-
+		case 40:
+			console.log(player.hammerCharge)
+			if (player.hammerCharge >= player.hammerChargeReq) {
+				hammer.push();
+				player.hammerCharge = 0;
+			}
+			break;
 	}
 }
 
 function updateGame(dt) {
 	bullets.update(dt);
 	targets.update(dt);
+	hammer.update(dt);
+
+	//Spawn targets
 	if (Math.random() < 0.01) {
 		rnd = Math.random();
 		tAngle = 0.9 + rnd*0.5;
 		if(rnd.toString(2)[3] == 0) {tAngle = -tAngle}
 		targets.push({x:200,y:0,v:100,angle:tAngle,radius:5});
 	}
+
+	//Charge ammo
 	if (player.ammo < player.ammoMax) {
 		ammoLoading += dt;
 		if (ammoLoading > player.shotReload) {
@@ -73,12 +88,13 @@ function renderGame() {
 	renderPlayer();
 	bullets.render(ctx);
 	targets.render(ctx);
+	hammer.render(ctx);
 }
 
 function renderBackground() {
 	ctx.fillStyle = "#c6c6c6";
 	ctx.fillRect(0,0,width,height);
-	document.getElementById("toolbar").innerHTML = "Score:" + player.score +" Combo:" + player.combo + " Ammo:" + player.ammo;
+	document.getElementById("toolbar").innerHTML = "Score:" + player.score +" Combo:" + player.combo + " Ammo:" + player.ammo + " Hammer:" + player.hammerCharge/player.hammerChargeReq;
 }
 
 function renderPlayer() {
