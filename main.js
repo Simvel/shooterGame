@@ -8,7 +8,7 @@ function level(n) {
 }
 
 function upgradeCost(upgradeLevel) {
-	return 20*1.1**upgradeLevel;
+	return 20*1.2**upgradeLevel;
 }
 
 var time = 0;
@@ -167,7 +167,8 @@ function updateGame(dt) {
 		rnd = Math.random();
 		tAngle = 0.9 + rnd*0.5;
 		if(rnd.toString(2)[3] == 0) {tAngle = -tAngle}
-		targets.push({x:200,y:0,v:100,angle:tAngle,radius:5});
+		rnd2 = Math.random();
+		targets.push({x:100+200*rnd2,y:0,v:100,angle:tAngle,radius:5});
 	}
 
 	//Charge ammo
