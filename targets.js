@@ -24,7 +24,7 @@ function Targets() {
 
 			if (obj.x > 400 || obj.x < 0) {obj.angle = -obj.angle;}
 
-			if (obj.y > 500) {
+			if (obj.y > 550) {
 				delete this.objects[i];
 			}
 

@@ -1,6 +1,15 @@
 var canvas, toolbar, ctx, tctx, width, height;
 
-var player = {x:200, y:600, shotTime:0, shotDelay:500, score:0, combo:0};
+var player = {
+			x:200,
+ 			y:600,
+  			shotTime:0,
+   			shotReload:2,
+    		score:0,
+     		combo:0,
+     		ammo:0,
+     		ammoMax:2
+     		};
 
 function init() {
 	canvas = document.getElementById("canvas");
@@ -8,7 +17,7 @@ function init() {
 	height = canvas.height;
 	ctx = canvas.getContext('2d');
 	toolbar = document.getElementById("toolbar");
-	player.shotTime = utils.getTime()-player.shotDelay-10;
+	ammoLoading = 0;
 
 	window.onkeydown = function(e) {
 		var key = e.keyCode ? e.keyCode : e.which;
@@ -24,11 +33,9 @@ function init() {
 function keyPressed(key) {
 	switch(key) {
 		case 38:
-			console.log(bullets);
+			console.log(player.ammo);
 
-			var time = utils.getTime();
-
-			if (player.shotTime+player.shotDelay < time) {
+			if (player.ammo > 0) {
 				bullets.push({
 					x:200,
 					y:600,
@@ -36,8 +43,7 @@ function keyPressed(key) {
 					radius:10,
 					combo:0
 				});
-				player.shotTime = time
-				console.log(targets.objects);
+				player.ammo--;
 			}
 			
 
@@ -53,6 +59,13 @@ function updateGame(dt) {
 		if(rnd.toString(2)[3] == 0) {tAngle = -tAngle}
 		targets.push({x:200,y:0,v:100,angle:tAngle,radius:5});
 	}
+	if (player.ammo < player.ammoMax) {
+		ammoLoading += dt;
+		if (ammoLoading > player.shotReload) {
+			player.ammo++;
+			ammoLoading = 0;
+		}
+	}
 }
 
 function renderGame() {
@@ -65,7 +78,7 @@ function renderGame() {
 function renderBackground() {
 	ctx.fillStyle = "#c6c6c6";
 	ctx.fillRect(0,0,width,height);
-	document.getElementById("toolbar").innerHTML = "Score:" + player.score +" Combo:" + player.combo;
+	document.getElementById("toolbar").innerHTML = "Score:" + player.score +" Combo:" + player.combo + " Ammo:" + player.ammo;
 }
 
 function renderPlayer() {
