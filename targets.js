@@ -26,6 +26,7 @@ function Targets() {
 
 			if (obj.y > 550) {
 				delete this.objects[i];
+				player.health--;
 			}
 
 			//This should not be here
