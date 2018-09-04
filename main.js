@@ -2,24 +2,33 @@ var canvas, toolbar, ctx, tctx, width, height;
 
 function level(n) {
 	return {
-		timeOnLevel:5+n,
-		spawnChance:0.01-0.001*n
+		timeOnLevel:20+5*n,
+		spawnChance:0.01+0.001*n
 	};
 }
 
+function upgradeCost(upgradeLevel) {
+	return 20*1.1**upgradeLevel;
+}
+
 var time = 0;
+
+var upgradeTable = {
+	ammoRadiusLevel:0
+}
 
 var player = {
 			x:200,
  			y:600,
  			health:10,
  			level:1,
+ 			credits:0,
    			shotReload:2,
     		score:0,
      		combo:0,
      		ammo:0,
      		ammoMax:2,
-     		ammoRadius:10,
+     		ammoRadius:5,
      		hammerCharge:0,
      		hammerChargeReq:30,
      		hammerRange:150,
@@ -28,7 +37,6 @@ var player = {
 
 function init(gameState) {
 	canvas = document.getElementById("canvas");
-	button1 = document.getElementById("button1");
 	width = canvas.width;
 	height = canvas.height;
 	ctx = canvas.getContext('2d');
@@ -52,18 +60,61 @@ function init(gameState) {
 	if(gameState == 1) {
 		canvas.style.display="block";
 		canvas.onclick = function() {};
+
+		player.ammoRadius = 5+0.5*upgradeTable.ammoRadiusLevel;
+
 		var ongoing = setInterval(function() {
 			updateGame(0.01);
 			renderGame();
-			if (player.health<1) {init(3); clearInterval(ongoing)};
-			if (time>level(player.level).timeOnLevel) {init(2); clearInterval(ongoing);time=0;};
+
+			//Did player die?
+			if (player.health<1) {
+				init(3); clearInterval(ongoing)
+			};
+
+			//Did level end?
+			if (time>level(player.level).timeOnLevel) {
+				init(2); 
+				clearInterval(ongoing);
+
+				time=0;
+			};
+
 		}, 10);
 	}
 
 	if(gameState == 2) {
 		canvas.style.display="none";
 		button1.style.display="block";
-		button1.onclick = function() {init(1);};
+		button1.innerHTML="Increase bullet size! ("+upgradeCost(upgradeTable.ammoRadiusLevel)+" credits)";
+		button1.onclick = function() {
+			if (player.credits > upgradeCost(upgradeTable.ammoRadiusLevel)) {
+				upgradeTable.ammoRadiusLevel++;
+				player.credits -= upgradeCost(upgradeTable.ammoRadiusLevel);
+				renderBackground();
+				init(2);
+			}
+		}
+
+		button2.style.display="block";
+		button3.style.display="block";
+		button4.style.display="block";
+		button5.style.display="block";
+		button6.style.display="block";
+
+		button7.style.display="block";
+		button7.innerHTML="Continue";
+		button7.onclick = function() {
+			button1.style.display="none";
+			button2.style.display="none";
+			button3.style.display="none";
+			button4.style.display="none";
+			button5.style.display="none";
+			button6.style.display="none";
+			button7.style.display="none";
+			player.level++;
+			init(1);
+		};
 	}
 
 	if(gameState == 3) {
@@ -80,7 +131,8 @@ function keyPressed(key) {
 	switch(key) {
 		case 38:
 			console.log(player.ammo);
-			console.log(time);
+			console.log(upgradeTable.ammoRadiusLevel);
+			console.log(player.ammoRadius);
 
 			if (player.ammo > 0) {
 				bullets.push({
@@ -111,7 +163,7 @@ function updateGame(dt) {
 	hammer.update(dt);
 
 	//Spawn targets
-	if (Math.random() < 0.01) {
+	if (Math.random() < level(player.level).spawnChance) {
 		rnd = Math.random();
 		tAngle = 0.9 + rnd*0.5;
 		if(rnd.toString(2)[3] == 0) {tAngle = -tAngle}
@@ -139,7 +191,7 @@ function renderGame() {
 function renderBackground() {
 	ctx.fillStyle = "#c6c6c6";
 	ctx.fillRect(0,0,width,height);
-	document.getElementById("toolbar").innerHTML = "Score:" + player.score +" Combo:" + player.combo + " Ammo:" + player.ammo + " Hammer:" + player.hammerCharge/player.hammerChargeReq + " Health:" + player.health;
+	document.getElementById("toolbar").innerHTML = "Score:" + player.score +" Combo:" + player.combo + " Ammo:" + player.ammo + " Hammer:" + player.hammerCharge/player.hammerChargeReq + " Health:" + player.health + " Credits:" + player.credits;
 }
 
 function renderPlayer() {

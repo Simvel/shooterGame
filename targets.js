@@ -24,7 +24,7 @@ function Targets() {
 
 			if (obj.x > 400 || obj.x < 0) {obj.angle = -obj.angle;}
 
-			if (obj.y > 550) {
+			if (obj.y > 600) {
 				delete this.objects[i];
 				player.health--;
 			}
@@ -38,6 +38,7 @@ function Targets() {
 						delete this.objects[i]; //Maybe delete after render. Prettier
 						player.score += 1+player.combo;
 						player.hammerCharge += 1+player.combo;
+						player.credits += 1+player.combo;
 						player.combo++;
 						bullets.objects[j].combo = 1;
 					}
