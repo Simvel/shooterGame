@@ -14,7 +14,7 @@ var player = {
      		hammerDuration:1
      		};
 
-function init() {
+function init(gameState) {
 	canvas = document.getElementById("canvas");
 	width = canvas.width;
 	height = canvas.height;
@@ -27,10 +27,21 @@ function init() {
 		keyPressed(key);
 	};
 
-	setInterval(function() {
-		updateGame(0.01);
-		renderGame();
-	}, 10);
+	if(gameState == 0) {
+		ctx.fillStyle = "#c6c6c6";
+		ctx.fillRect(0,0,width,height);
+		ctx.fillStyle = "#000000";
+		ctx.font="20px Georgia";
+		ctx.fillText("Let's go!",10,50);
+		canvas.onclick = function() {init(1);};
+	}
+
+	if(gameState == 1) {
+		setInterval(function() {
+			updateGame(0.01);
+			renderGame();
+		}, 10);
+	}
 }
 
 function keyPressed(key) {
